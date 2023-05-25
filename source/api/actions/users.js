@@ -24,7 +24,8 @@ module.exports = {
 		 */
 		get : async function (context) {
 			const users = await context.data.list.User({});
-			context.send(users.toClient());
+			// context.send(users.toClient());
+			context.send("Load");
 		},
 		/**
 		 * @swagger
