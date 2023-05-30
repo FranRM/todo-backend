@@ -24,8 +24,8 @@ module.exports = {
 		 */
 		get : async function (context) {
 			const tasks = await context.data.list.Task({});
-			// context.send(tasks.toClient());
-			context.send("Load task");
+			context.send(tasks.toClient());
+			// context.send("Load task");
 		},
 		/**
 		 * @swagger

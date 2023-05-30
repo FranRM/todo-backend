@@ -10,6 +10,11 @@ module.exports = {
 		toClient : function () {
 			return {
 				id          : this._id,
+			}
+		},
+		toClientDetailed : function () {
+			return {
+				id          : this._id,
 				task_names : this.task_names,
 			}
 		},

@@ -11,6 +11,7 @@ module.exports = {
 			return {
 				id          : this._id,
 				first_names : this.first_names,
+				login 		: this.login
 			}
 		},
 		using    : function (context) {
