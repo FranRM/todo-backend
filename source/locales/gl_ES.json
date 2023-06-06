@@ -1,0 +1,27 @@
+{
+  "exceptions": {
+    "data_exception": "Requírense un ou mais campos",
+    "data_server_connection_failed": "",
+    "data_server_disconnected": "",
+    "data_server_offline": "",
+    "data_validation_exception": "",
+    "denied_access": "",
+    "missing_fields": "",
+    "page_not_found": "",
+    "report_data_error": "",
+    "request_timeout": "",
+    "unauthorized_access": ""
+  },
+  "labels": {
+    "testing": "Unha proba mais"
+  },
+  "api": {
+    "actions": {
+      "users": {
+        "labels": {
+          "user_list": ""
+        }
+      }
+    }
+  }
+}

@@ -13,6 +13,7 @@
 	"report_data_error" : "Error loading report data"
   },
   "labels" : {
+	"testing" : "one more test"
   },
   "debugs" : {
   },
