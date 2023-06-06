@@ -5,7 +5,14 @@ const anxeb = require('anxeb-node');
 module.exports = {
 	url     : '/tasks',
 	type    : anxeb.Route.types.action,
-	access  : anxeb.Route.access.public,
+	access  : anxeb.Route.access.private,
+	owners 	: '*' ,
+			roles 	: {
+				get : '*',
+				post: ['*'],
+				put: ['*'],
+				delete: ['*']
+			},
 	timeout : 60000,
 	methods : {
 		/**
@@ -23,9 +30,15 @@ module.exports = {
 		 *              $ref: '#/components/schemas/TaskList'
 		 */
 		get : async function (context) {
-			const tasks = await context.data.list.Task({});
-			context.send(tasks.toClient());
-			// context.send("Load task");
+			const query = {};
+			if (context.profile.user.role == 'admin') {
+				const tasks = await context.data.list.Task();
+				context.send(tasks.toClientDetailed());
+			} else {
+				query['owner'] = context.profile.identity;
+				const tasks = await context.data.list.Task(query);
+				context.send(tasks.toClientDetailed());
+			}
 		},
 		/**
 		 * @swagger
@@ -49,13 +62,19 @@ module.exports = {
 		 */
 		post : async function (context) {
 			const payload = context.payload;
+			const query = {};
+			query['first_names'] = payload.owner.trim();
+			const user = await context.data.find.User(query);
 			const task = context.data.create.Task({
-				task_names : payload.task_names,
+				name 		: payload.name,
+				description : payload.description,
+				priority 	: payload.priority,
+				owner 		: user._id,
+				done		: payload.done,
+				date		: anxeb.utils.date.now().unix(),
 			});
-
 			await task.persist();
-
-			context.send(task.toClient());
+			context.send(task.toClientDetailed());
 		}
 	},
 	childs  : {
@@ -90,7 +109,6 @@ module.exports = {
 					if (!task) {
 						context.log.exception.record_not_found.args('Tarea', context.params.taskId).throw();
 					}
-
 					context.send(task.toClient());
 				},
 				/**
@@ -126,15 +144,33 @@ module.exports = {
 				put : async function (context) {
 					const task = await context.data.retrieve.Task(context.params.taskId);
 					const payload = context.payload;
-
+					const query = {};
+					query['first_names'] = payload.owner.trim();
+					const user = await context.data.find.User(query);
 					if (!task) {
 						context.log.exception.record_not_found.args('Task', context.params.taskId).throw();
 					}
-
-					task.task_names = payload.task_names;
-					await task.persist();
-
-					context.send(task.toClient());
+					if (context.profile.user.role == 'admin'){
+						task.name 		= payload.name,
+						task.description = payload.description,
+						task.priority 	= payload.priority,
+						task.owner 		= user._id,
+						task.done		= payload.done,
+						task.date		= anxeb.utils.date.now().unix(),
+						await task.persist();
+						context.send(task.toClient());
+					} else if (task.owner == context.profile.identity) {
+						task.name 		= payload.name,
+						task.description = payload.description,
+						task.priority 	= payload.priority,
+						task.owner 		= user._id,
+						task.done		= payload.done,
+						task.date		= anxeb.utils.date.now().unix(),
+						await task.persist();
+						context.send(task.toClient());
+					} else {
+						context.send("You have no power here")
+					}
 				},
 				/**
 				 * @openapi
@@ -156,13 +192,18 @@ module.exports = {
 				 */
 				delete : async function (context) {
 					const task = await context.data.retrieve.Task(context.params.taskId);
-
 					if (!task) {
 						context.log.exception.record_not_found.args('Task', context.params.taskId).throw();
 					}
-
-					await task.delete();
-					context.ok();
+					if (context.profile.user.role == 'admin'){
+						await task.delete();
+						context.ok();
+					}else if(task.owner == context.profile.identity) {
+						await task.delete();
+						context.ok();
+					}else{
+						context.send("You have no power here")
+					}					
 				}
 			}
 		}

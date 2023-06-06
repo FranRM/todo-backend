@@ -61,6 +61,12 @@ module.exports = {
 	childs  : {
 		item : {
 			url     : '/:userId',
+			access  : anxeb.Route.access.private,
+			owners 	: '*' ,
+			roles 	: {
+				get : '*',
+				post: ['*'],
+		},
 			methods : {
 				/**
 				 * @openapi

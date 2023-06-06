@@ -6,7 +6,12 @@ const SchemaBuilder = require('../../../middleware/schema');
 module.exports = {
 	Schema : function (params) {
 		return new SchemaBuilder(params, 'Task').build((builder) => ({
-			task_names : fields.string({ required : true }),
+			name 		: fields.string({ required : true }),
+			description : fields.string({ required : true }),
+			priority	: fields.enum({required:true}, ['low', 'normal', 'urgent']),
+			owner 		: fields.reference({required:true, index:true}, 'User'),
+			done		: fields.bool({required:true}),
+			date		: fields.number({required:true})
 		}));
 	}
 };

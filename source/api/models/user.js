@@ -11,7 +11,8 @@ module.exports = {
 			return {
 				id          : this._id,
 				first_names : this.first_names,
-				login 		: this.login
+				login 		: this.login,
+				role        : this.role
 			}
 		},
 		using    : function (context) {

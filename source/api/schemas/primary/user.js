@@ -9,6 +9,7 @@ module.exports = {
 		return new SchemaBuilder(params, 'User').build((builder) => ({
 			first_names : fields.string({ required : true }),
 			login  : new Login.Schema({required:true, static:true}),
+			role  : new fields.enum({required:true}, ['client', 'admin']),
 		}));
 	}
 };
