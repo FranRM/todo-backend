@@ -61,18 +61,39 @@ module.exports = {
 		 *              $ref: '#/components/schemas/UsTasker'
 		 */
 		post : async function (context) {
-			const payload = context.payload;
+			const payload = context.payload.task;
 			const query = {};
 			query['first_names'] = payload.owner.trim();
+			let task = await context.data.upsert.Task(payload.id);
 			const user = await context.data.find.User(query);
-			const task = context.data.create.Task({
-				name 		: payload.name,
-				description : payload.description,
-				priority 	: payload.priority,
-				owner 		: user._id,
-				done		: payload.done,
-				date		: anxeb.utils.date.now().unix(),
-			});
+			if (task) {
+
+				// task = context.data.create.Task({
+				// 	name 		: payload.name,
+				// 	description : payload.description,
+				// 	priority 	: payload.priority,
+				// 	owner 		: user._id,
+				// 	done		: payload.done,
+				// 	date		: payload.date,
+				// });
+				task.id = payload.id;
+				task.name = payload.name;
+				task.description = payload.description;
+				task.priority = payload.priority;
+				task.owner = user.id;
+				task.done = payload.done;
+				task.date = payload.date;
+			}
+			else{
+				task = context.data.create.Task({
+					name 		: payload.name,
+					description : payload.description,
+					priority 	: payload.priority,
+					owner 		: user._id,
+					done		: payload.done,
+					date		: payload.date,
+				});
+			}
 			await task.persist();
 			context.send(task.toClientDetailed());
 		}
@@ -104,12 +125,11 @@ module.exports = {
 				 *         description: The task was not found
 				 */
 				get : async function (context) {
-					const task = await context.data.retrieve.Task(context.params.taskId);
-
+					const task = await context.data.retrieve.Task(context.params.taskId, ['owner']);
 					if (!task) {
 						context.log.exception.record_not_found.args('Tarea', context.params.taskId).throw();
 					}
-					context.send(task.toClient());
+					context.send(task.toClientDetailed());
 				},
 				/**
 				 * @openapi
@@ -145,7 +165,7 @@ module.exports = {
 					const task = await context.data.retrieve.Task(context.params.taskId);
 					const payload = context.payload;
 					const query = {};
-					query['first_names'] = payload.owner.trim();
+					query['first_names'] = payload.task.owner.trim();
 					const user = await context.data.find.User(query);
 					if (!task) {
 						context.log.exception.record_not_found.args('Task', context.params.taskId).throw();

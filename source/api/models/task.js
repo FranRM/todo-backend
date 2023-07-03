@@ -19,8 +19,13 @@ module.exports = {
 		},
 		toClientDetailed : function () {
 			return {
-				id		: this._id,
-				name 	: this.task_name,
+				id			: this._id,
+				name 		: this._doc.name,
+				description : this._doc.description,
+				priority 	: this._doc.priority,
+				owner 		: this._doc.owner,
+				done 		: this._doc.done,
+				date 		: this._doc.date
 			}
 		},
 		using    : function (context) {

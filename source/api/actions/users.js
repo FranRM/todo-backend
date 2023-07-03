@@ -8,10 +8,10 @@ module.exports = {
 	type    : anxeb.Route.types.action,
 	access  : anxeb.Route.access.private,
 	roles   : {
-		get    : ['system_admin'],
-		put    : ['system_admin'],
-		delete : ['system_admin'],
-		post   : ['system_admin']
+		get    : ['system.admin'],
+		put    : ['system.admin'],
+		delete : ['system.admin'],
+		post   : ['system.admin']
 	},
 	timeout : 60000,
 	methods : {

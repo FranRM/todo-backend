@@ -20,7 +20,7 @@ module.exports = function (context, user) {
 			}).catch(function (err) {});
 
 			let $type = $user.role === 'admin' ? 'system' : 'app';
-			let $roles = ['${$type}.${$user.role}'];
+			let $roles = [`${$type}.${$user.role}`];
 			return {
 				user: $user,
 				roles: $roles,

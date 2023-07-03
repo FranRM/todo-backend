@@ -10,7 +10,7 @@ module.exports = {
 			description : fields.string({ required : true }),
 			priority	: fields.enum({required:true}, ['low', 'normal', 'urgent']),
 			owner 		: fields.reference({required:true, index:true}, 'User'),
-			done		: fields.bool({required:true}),
+			done		: fields.enum({required:true}, ['True', 'False']),
 			date		: fields.number({required:true})
 		}));
 	}
